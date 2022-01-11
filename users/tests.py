@@ -143,7 +143,8 @@ class SignInKakaoTest(TestCase):
                 'data':{
                     "nickname":"김재엽",
                     "email"   :"kjy120924@gmail.com",
-                    "gender"  :"male"
+                    "gender"  :"male",
+                    "travelNumber":0
                 }
             }
         )
