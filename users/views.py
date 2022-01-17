@@ -15,7 +15,7 @@ from utils.gender import Gender
 class SignInKakaoView(View):
     def post(self, request, *args, **kwargs):
         try:
-            access_token = request.headers.get('Authorization', None)
+            access_token = request.headers.get("Authorization", None)
             if access_token is None:
                  return JsonResponse({"message":"KAKAO_TOKEN_DOES_NOT_FOUND"}, status=401)
 
@@ -44,23 +44,23 @@ class SignInKakaoView(View):
                 }
             )
 
+            message = "SUCCESS"
+            status  = 200
+
             if is_created:
                 message = "USER_CREATED"
                 status  = 201
-            else:
-                message = "SUCCESS"
-                status  = 200
 
             exp_time = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             my_token = jwt.encode(
-                {'id':user.id, 'exp':exp_time},
+                {"id":user.id, "exp":exp_time},
                 SECRET_KEY,
                 algorithm=ALGORITHM
             )
 
             data = {
-                'message' : message,
-                'token'   : my_token,
+                "message" : message,
+                "token"   : my_token,
             }
         
             return JsonResponse(data, status=status)

@@ -4,10 +4,11 @@ from django.test     import TestCase, Client
 from unittest.mock   import MagicMock, patch
 
 from users.models    import User
+
 class SignInKakaoTest(TestCase):
     def setUp(self):
         User.objects.create(
-            id = 1,
+            id       = 1,
             kakao_id = "1234772",
             nickname = "김재엽",
             email    = "kjy120924@gmail.com",
