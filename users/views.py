@@ -9,8 +9,9 @@ from my_settings  import (KAKAO_KEY,
                           SECRET_KEY,
                           ALGORITHM)
 
-from users.models import User
-from utils.gender import Gender
+from users.models         import User
+from utils.gender         import Gender
+from utils.login_required import login_required
 
 class SignInKakaoView(View):
     def post(self, request, *args, **kwargs):
@@ -67,3 +68,23 @@ class SignInKakaoView(View):
 
         except KeyError as e:
             return JsonResponse({"message":getattr(e,"message",str(e))},status=400)
+
+
+class UserInformationView(View):
+    @login_required
+    def get(self, request, *args, **kwargs):
+        try:
+            user = request.user
+
+            data = {
+                "nickname": user.nickname,
+                "email"   : user.email,
+                "gender"  : Gender(user.gender).name,
+            }
+            return JsonResponse({"data":data}, status=200)
+
+        except KeyError as e:
+            return JsonResponse({"message":getattr(e,"message",str(e))},status=400)
+
+        except User.DoesNotExist:
+            return JsonResponse({"message":"USER_DOES_NOT_EXIST"},status=404)

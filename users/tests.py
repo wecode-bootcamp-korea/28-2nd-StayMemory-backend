@@ -130,3 +130,20 @@ class SignInKakaoTest(TestCase):
         response            = client.post("/users/signin-kakao", **headers)
 
         self.assertEqual(response.status_code, 403)
+
+    def test_user_information_view_success(self):
+        client  = Client()
+        token   = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MX0.AekHFMguragxj6mgkwhioYrEzr6tOktCW-vOYLj1P9M"
+        headers  = {"HTTP_Authorization":token}
+        response = client.get("/users/info", **headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(), 
+            {
+                'data':{
+                    "nickname":"김재엽",
+                    "email"   :"kjy120924@gmail.com",
+                    "gender"  :"male"
+                }
+            }
+        )
