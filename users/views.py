@@ -9,8 +9,9 @@ from my_settings  import (KAKAO_KEY,
                           SECRET_KEY,
                           ALGORITHM)
 
-from users.models import User
-from utils.gender import Gender
+from users.models         import User
+from utils.gender         import Gender
+from utils.login_required import login_required
 
 class SignInKakaoView(View):
     def post(self, request, *args, **kwargs):
