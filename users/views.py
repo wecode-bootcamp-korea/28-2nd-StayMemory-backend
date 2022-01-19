@@ -12,6 +12,7 @@ from my_settings  import (KAKAO_KEY,
 from users.models         import User
 from utils.gender         import Gender
 from utils.login_required import login_required
+from reservations.models  import Reservation
 
 class SignInKakaoView(View):
     def post(self, request, *args, **kwargs):
@@ -77,9 +78,10 @@ class UserInformationView(View):
             user = request.user
 
             data = {
-                "nickname": user.nickname,
-                "email"   : user.email,
-                "gender"  : Gender(user.gender).name,
+                "nickname"    : user.nickname,
+                "email"       : user.email,
+                "gender"      : Gender(user.gender).name,
+                "travelNumber": Reservation.objects.filter(user=user).count()
             }
             return JsonResponse({"data":data}, status=200)
 
