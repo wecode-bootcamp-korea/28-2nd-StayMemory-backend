@@ -21,4 +21,5 @@ urlpatterns = [
     path('wishlists', include('wishlists.urls')),
     path('stays', include('stays.urls')),
     path('reservations', include('reservations.urls')),
+    path('admins', include('admins.urls')), 
 ]
