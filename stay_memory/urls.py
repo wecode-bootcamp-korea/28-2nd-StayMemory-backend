@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('users', include('users.urls')),
     path('wishlists', include('wishlists.urls')),
-    path('stays', include('stays.urls'))
+    path('stays', include('stays.urls')),
+    path('reservations', include('reservations.urls')),
 ]
