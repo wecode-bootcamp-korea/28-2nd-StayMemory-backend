@@ -19,7 +19,7 @@ class StayListView(View):
             room_min_price = request.GET.get('minprice', 10000)
             room_max_price = request.GET.get('maxprice', None)
             category       = request.GET.get('category', None)
-            max_num_people = request.GET.get('maxpeople', None)            
+            max_num_people = request.GET.get('adult', None)            
             sorts          = request.GET.get('sort','id')
 
             q=Q()
