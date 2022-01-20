@@ -14,6 +14,15 @@ from utils.gender         import Gender
 from utils.login_required import login_required
 from reservations.models  import Reservation
 
+class KakaoClient:
+    def __init__(self, kakao_token):
+        self.token  = kakao_token
+        self.url    = "https://kapi.kakao.com/v2/user/me"
+        self.header = {"Authorization":f"Bearer {kakao_token}"}
+
+    def get_user_information(self):
+        return requests.get(self.url, headers=self.header).json()
+
 class SignInKakaoView(View):
     def post(self, request, *args, **kwargs):
         try:
@@ -21,10 +30,8 @@ class SignInKakaoView(View):
             if access_token is None:
                  return JsonResponse({"message":"KAKAO_TOKEN_DOES_NOT_FOUND"}, status=401)
 
-            profile = requests.get(
-                "https://kapi.kakao.com/v2/user/me",
-                headers={"Authorization":f"Bearer {access_token}"}
-            ).json()
+            kakao_client = KakaoClient(access_token)
+            profile      = kakao_client.get_user_information()
 
             kakao_id = profile.get("id", None)
 
