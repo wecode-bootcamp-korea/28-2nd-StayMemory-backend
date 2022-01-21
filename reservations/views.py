@@ -5,6 +5,7 @@ from datetime         import datetime
 from django.views     import View
 from django.http      import JsonResponse
 from django.db.models import Q
+from json.decoder     import JSONDecodeError
 
 from utils.login_required import login_required
 from reservations.models  import (Reservation,
@@ -86,7 +87,7 @@ class ReservationInformationView(View):
                 check_out_date     = checkout,
                 reservation_number = uuid.uuid4(),
                 payment_id         = payment,
-                price              = price,
+                price              = int(price.replace(",","")),
                 num_people         = num_people,
             )
 
@@ -103,3 +104,6 @@ class ReservationInformationView(View):
 
         except Room.DoesNotExist:
             return JsonResponse({"message":"ROOM_DOES_NOT_EXIST"}, status=404)
+
+        except JSONDecodeError:
+            return JsonResponse({"message":"JSON_DECODE_ERROR"}, status=400)
