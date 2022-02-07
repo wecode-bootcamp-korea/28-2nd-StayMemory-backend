@@ -34,7 +34,6 @@ class SignInKakaoView(View):
             profile      = kakao_client.get_user_information()
 
             kakao_id = profile.get("id", None)
-
             if kakao_id is None:
                 return JsonResponse({"message":"KAKAO_TOKEN_ERROR"}, status=403)
 
@@ -87,7 +86,7 @@ class UserInformationView(View):
             data = {
                 "nickname"    : user.nickname,
                 "email"       : user.email,
-                "gender"      : Gender(user.gender).name,
+                "gender"      : Gender(user.gender).name if user.gender else None,
                 "travelNumber": Reservation.objects.filter(user=user).count()
             }
             return JsonResponse({"data":data}, status=200)

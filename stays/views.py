@@ -89,7 +89,7 @@ class DetailPageView(View):
                 "checkout"        : room.check_out_time,
                 "headCount"       : room.base_num_people,
                 "img"             : stay.thumbnail_url,
-                "area"            : room.area
+                "area"            : float(room.area),
                 "bed":{
                     "queen_bed" :room.queen_bed,
                     "single_bed":room.single_bed,
@@ -109,14 +109,12 @@ class UnavailableDateView(View):
           
             start_date = datetime.strptime(start_date, "%Y-%m-%d")
             end_date   = start_date + timedelta(days=186)
-
             room = Room.objects.get(stay_id = stay_id)
             reservations = Reservation.objects.filter(
                 room                = room,
                 check_in_date__lte  = end_date,
                 check_out_date__gte = start_date,
             )
-
             unavailable_date = []
             for reservation in reservations:
                 checkin_date  = reservation.check_in_date

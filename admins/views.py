@@ -35,7 +35,7 @@ class AwsS3Client:
                 Bucket = self.bucket_name,
             )
 
-            return f"https://{self.bucket_name}.ap-northeast-2.amazonaws.com/{directory}/{filename}"
+            return f"https://{self.bucket_name}.s3.ap-northeast-2.amazonaws.com/{filename}"
 
         except:
             return None
@@ -44,9 +44,11 @@ class AdminStayView(View):
     def get(self, request, *args, **kwargs):
         try:
             admin_id = kwargs["admin_id"]
+            offset   = request.GET.get("offset",0)
+            limit    = request.GET.get("limit",10)
+
             admin    = Admin.objects.get(id=admin_id)
             stays    = Stay.objects.filter(admin=admin)
-            
             data =[
                 {
                     "hotelId"  : stay.id,
@@ -55,7 +57,10 @@ class AdminStayView(View):
                     "baseNum"  : stay.room_set.first().base_num_people,
                     "maxNum"   : stay.room_set.first().max_num_people,
                     "img"      : stay.thumbnail_url,
-                }for stay in stays
+                    "price"    : stay.room_set.first()\
+                                .roomprice_set.order_by("-cost__price")[0]\
+                                .cost.price,
+                }for stay in stays[offset:offset+limit]
             ]
 
             return JsonResponse({"data":data}, status=200)
@@ -73,7 +78,9 @@ class AdminStayView(View):
             price      = request.POST.get('price', None)
            
             stay = Stay.objects.get(id=stay_id)
-
+            if not image and not hotel_name and not price:
+                return JsonResponse({"message":"NO_VALUE"}, status=400)
+            
             if image:
                 aws_s3_client = AwsS3Client(AWS_ACCESS_KEY, AWS_SECRET_KEY, S3_BUCKET_NAME)
                 image_url     = aws_s3_client.upload("stays", image)
@@ -92,7 +99,6 @@ class AdminStayView(View):
                       .roomprice_set.order_by("-cost__price")[0].cost
                 cost.price = price
                 cost.save()
-            
             return JsonResponse({"message":"success"}, status=201)
 
         except KeyError:
