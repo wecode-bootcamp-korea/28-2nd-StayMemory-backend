@@ -5,7 +5,7 @@
 </br>
 
 ## 개발 인원 및 기간
-- 개발기간: 2021.01.10. ~ 2022.01.21.
+- 개발기간: 2022.01.10. ~ 2022.01.21.
 - Frontend: 이가윤, 옥채현, 이석호 (repository: https://github.com/wecode-bootcamp-korea/28-2nd-StayMemory-frontend)
 - Backend: 김재엽, 이찬영
 
