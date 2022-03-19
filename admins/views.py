@@ -53,6 +53,7 @@ class AdminStayView(View):
                 {
                     "hotelId"  : stay.id,
                     "hotelType": stay.category.name,
+                    "hotelName": stay.name,
                     "address"  : f"{stay.state} {stay.city} {stay.address}",
                     "baseNum"  : stay.room_set.first().base_num_people,
                     "maxNum"   : stay.room_set.first().max_num_people,
