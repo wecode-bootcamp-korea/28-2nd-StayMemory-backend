@@ -1,5 +1,6 @@
 import json
 import uuid
+import zoneinfo
 
 from datetime         import datetime
 from django.views     import View
@@ -29,10 +30,11 @@ class ReservationInformationView(View):
                 q &= Q(check_in_date__gte=today)
             if category == "history":
                 q &= Q(check_in_date__lt=today)
-
             user = request.user
-            reservations = Reservation.objects.filter(user=user)
 
+            reservations = Reservation.objects.filter(q)
+
+            korea_tz = zoneinfo.ZoneInfo('Asia/Seoul')
             data = [{
                 "reservationId"    : res.id,
                 "reservationNumber": res.reservation_number,
@@ -41,8 +43,8 @@ class ReservationInformationView(View):
                 "address"          : f"{res.room.stay.state} {res.room.stay.city} {res.room.stay.address}",
                 "baseNum"          : res.room.base_num_people,
                 "maxNum"           : res.room.max_num_people,
-                "checkInDate"      : res.check_in_date.strftime("%Y-%m-%d"),
-                "checkOutDate"     : res.check_out_date.strftime("%Y-%m-%d"),
+                "checkInDate"      : res.check_in_date.astimezone(korea_tz).strftime("%Y-%m-%d"),
+                "checkOutDate"     : res.check_out_date.astimezone(korea_tz).strftime("%Y-%m-%d"),
                 "price"            : int(res.price),
                 "img"              : res.room.stay.thumbnail_url,
             }for res in reservations[offset:offset+limit]]
@@ -65,10 +67,13 @@ class ReservationInformationView(View):
             price          = data["price"]
             payment_method = data["payment"]
 
+            check_in_date = datetime.strptime(checkin+"-+0900", "%Y-%m-%d-%z")
+            check_out_date = datetime.strptime(checkout+"-+0900", "%Y-%m-%d-%z")
+
             reservations = Reservation.objects.filter(
                     user           = user, 
-                    check_in_date  = checkin,
-                    check_out_date = checkout,
+                    check_in_date  = check_in_date,
+                    check_out_date = check_out_date,
             )
             if reservations:
                 return JsonResponse({"message":"DUPLICATED_RESERVATION"}, status=400)
@@ -78,16 +83,15 @@ class ReservationInformationView(View):
             payment = Payment.objects.get(name=payment_method)
             status  = ReservationStatus.objects.get(status="complete")
             room    = Room.objects.get(stay_id=stay_id)
-
             reservation = Reservation.objects.create(
                 user               = user,
                 room               = room,
                 reservation_status = status,
-                check_in_date      = checkin,
-                check_out_date     = checkout,
+                check_in_date      = check_in_date,
+                check_out_date     = check_out_date,
                 reservation_number = uuid.uuid4(),
                 payment_id         = payment,
-                price              = int(price.replace(",","")),
+                price              = price,
                 num_people         = num_people,
             )
 
